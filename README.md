@@ -4,7 +4,7 @@ Student management API for the DevOps midterm. It uses Spring Boot, PostgreSQL
 and Gradle, with Docker Compose for the application and database and Jenkins
 for the build pipeline.
 
-**Sembi Amir · IT2-2307 · Student ID 37693**
+Sembi Amir · IT2-2307 · Student ID 37693
 
 ## Run the application
 
@@ -47,7 +47,7 @@ For a local Gradle build, install JDK 21 and use the included wrapper:
 ```
 
 Docker builds provide their own JDK. The wrapper downloads Gradle 8.14.3.
-The automated HTTP tests use an isolated H2 database in PostgreSQL compatibility
+The HTTP tests run against an isolated H2 database in PostgreSQL compatibility
 mode. To check the running API against PostgreSQL, use:
 
 ```bash
