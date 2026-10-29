@@ -3,7 +3,7 @@
 Spring Boot CRUD API backed by PostgreSQL for the DevOps midterm.
 Author: Sembi Amir. Group: IT2-2307. Student ID: 37693.
 
-Documentation status: baseline
+Documentation status: Sembi Amir Linux and API guide
 
 ## Run
 
