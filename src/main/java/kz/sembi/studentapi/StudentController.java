@@ -20,6 +20,9 @@ public class StudentController {
         Student saved=repository.saveAndFlush(new Student(request));
         return ResponseEntity.created(URI.create("/api/students/"+saved.getId())).body(saved);
     }
+    @PutMapping("/{id}") public Student update(@PathVariable Long id,@Valid @RequestBody StudentRequest request) {
+        Student student=one(id); student.update(request); return repository.saveAndFlush(student);
+    }
     @DeleteMapping("/{id}") public ResponseEntity<Void> delete(@PathVariable Long id) {
         repository.delete(one(id)); return ResponseEntity.noContent().build();
     }
