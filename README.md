@@ -60,3 +60,9 @@ Run `bash scripts/api_demo.sh` for real PostgreSQL CRUD and persistence checks.
 The API demo removes only its previous studentNumber 37693 demo record, creates
 new test data, recreates this project's containers, verifies persistence and
 deletes the record. Other student records remain in the database.
+
+## CRUD feature by Sembi Amir
+
+PUT `/api/students/{id}` updates all validated student fields, returns 200 for an
+existing ID, 400 for invalid fields, 404 for a missing ID and 409 for a duplicate
+student number. An automated lifecycle test verifies the stored update.
