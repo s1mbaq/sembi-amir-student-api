@@ -1,0 +1,11 @@
+.env
+.env.*
+!.env.example
+.gradle/
+build/
+logs/*
+!logs/.gitkeep
+evidence/*
+!evidence/.gitkeep
+infra/secrets/
+*.log

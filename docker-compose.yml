@@ -1,0 +1,32 @@
+name: sembi-amir-student-api
+services:
+  app:
+    build: .
+    image: sembi-amir-student-api:v1.0-37693
+    ports:
+      - "127.0.0.1:8093:8080"
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/studentdb
+      DB_USER: student
+      DB_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [student-net]
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: studentdb
+      POSTGRES_USER: student
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Set DB_PASSWORD in .env}
+    volumes: [student-data:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U student -d studentdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+    networks: [student-net]
+volumes:
+  student-data:
+networks:
+  student-net:

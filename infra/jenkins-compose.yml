@@ -1,0 +1,37 @@
+name: sembi-amir-midterm-ci
+services:
+  bootstrap:
+    image: busybox:1.37
+    user: root
+    command: ["chown", "1000:1000", "/bootstrap"]
+    volumes: [agent-bootstrap:/bootstrap]
+  jenkins:
+    image: sembi-amir-midterm-jenkins:local
+    build:
+      context: .
+      dockerfile: Jenkins.Dockerfile
+    environment:
+      JAVA_OPTS: -Djenkins.install.runSetupWizard=false
+    ports: ["127.0.0.1:8094:8080"]
+    volumes:
+      - jenkins-home:/var/jenkins_home
+      - agent-bootstrap:/bootstrap
+      - ./init.groovy.d:/usr/share/jenkins/ref/init.groovy.d:ro
+      - ./secrets/admin-password:/run/secrets/admin-password:ro
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
+  agent:
+    image: sembi-amir-midterm-jenkins:local
+    user: root
+    entrypoint: ["/bin/bash", "/agent-start.sh"]
+    volumes:
+      - agent-work:/home/jenkins/agent
+      - agent-bootstrap:/bootstrap:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./agent-start.sh:/agent-start.sh:ro
+    depends_on: [jenkins]
+volumes:
+  jenkins-home:
+  agent-bootstrap:
+  agent-work:

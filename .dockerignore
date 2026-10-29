@@ -1,0 +1,9 @@
+.git
+.gradle
+build
+.env
+.env.*
+evidence
+logs
+infra
+docs
