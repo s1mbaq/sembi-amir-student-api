@@ -18,6 +18,7 @@ class StudentApiTests {
         long id=repo.findAll().getFirst().getId();
         mvc.perform(get("/api/students")).andExpect(status().isOk()).andExpect(jsonPath("$.length()").value(1));
         mvc.perform(get("/api/students/"+id)).andExpect(status().isOk()).andExpect(jsonPath("$.studentNumber").value("37693"));
+        mvc.perform(put("/api/students/"+id).contentType(MediaType.APPLICATION_JSON).content(data.replace("IT2-2307","IT2-2307-updated"))).andExpect(status().isOk()).andExpect(jsonPath("$.groupName").value("IT2-2307-updated"));
         mvc.perform(delete("/api/students/"+id)).andExpect(status().isNoContent());
         mvc.perform(get("/api/students/"+id)).andExpect(status().isNotFound());
     }
