@@ -7,4 +7,4 @@ RUN apt-get update && apt-get install -y --no-install-recommends ca-certificates
  && apt-get update && apt-get install -y --no-install-recommends docker-ce-cli docker-buildx-plugin \
  && rm -rf /var/lib/apt/lists/*
 USER jenkins
-RUN jenkins-plugin-cli --plugins workflow-aggregator git pipeline-stage-view credentials-binding
+RUN jenkins-plugin-cli --plugins workflow-aggregator git pipeline-stage-view credentials-binding junit
