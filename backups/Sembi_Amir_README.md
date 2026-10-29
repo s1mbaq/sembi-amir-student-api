@@ -1,13 +1,16 @@
 # Sembi Amir Student API
 
-Spring Boot CRUD API backed by PostgreSQL for the DevOps midterm.
-Author: Sembi Amir. Group: IT2-2307. Student ID: 37693.
+Student management API for the DevOps midterm. It uses Spring Boot, PostgreSQL
+and Gradle, with Docker Compose for the application and database and Jenkins
+for the build pipeline.
 
-Documentation status: Sembi Amir Linux, API, Docker and Jenkins guide
+**Sembi Amir · IT2-2307 · Student ID 37693**
 
-## Run
+## Run the application
 
-Copy `.env.example` to `.env`, set a random DB_PASSWORD, then run:
+Start Docker Desktop with Ubuntu WSL2 integration enabled. From the project
+directory, copy `.env.example` to `.env` and replace `DB_PASSWORD` with a random
+password. Then run:
 
 ```bash
 docker compose up --build -d
@@ -15,54 +18,64 @@ docker compose ps
 curl http://localhost:8093/
 ```
 
-API: http://localhost:8093/api/students
-Personalized Docker image: sembi-amir-student-api:v1.0-37693.
-Jenkins job: Sembi_Amir_Student_API.
-Java 21 and the included Gradle 8.14.3 wrapper build the application.
-PostgreSQL is accessed through the Compose service name `db`.
+The API is available at `http://localhost:8093/api/students`. The application
+connects to PostgreSQL through `db:5432` on the Compose network. Database data
+is stored in a named volume and survives container recreation.
 
-## Tests
+## API
+
+Each student has `fullName`, `groupName`, `studentNumber` and `email`.
+The server assigns the record ID. Student numbers must contain digits and be unique.
+
+| Method | Endpoint | Successful response | Other responses |
+| --- | --- | --- | --- |
+| POST | /api/students | 201 with a Location header | 400 invalid data, 409 duplicate number |
+| GET | /api/students | 200 with an array of students | |
+| GET | /api/students/{id} | 200 with one student | 404 missing record |
+| PUT | /api/students/{id} | 200 with the updated student | 400 invalid data, 404 missing record, 409 duplicate number |
+| DELETE | /api/students/{id} | 204 | 404 missing record |
+
+The CRUD feature branch adds the PUT operation and a lifecycle test that checks
+the updated fields before deleting the record.
+
+## Build and test
+
+For a local Gradle build, install JDK 21 and use the included wrapper:
 
 ```bash
-./gradlew test
+./gradlew clean build
 ```
 
-Automated HTTP tests use an isolated H2 database in PostgreSQL compatibility mode.
-The demonstration additionally tests the running API against real PostgreSQL.
+Docker builds provide their own JDK. The wrapper downloads Gradle 8.14.3.
+The automated HTTP tests use an isolated H2 database in PostgreSQL compatibility
+mode. To check the running API against PostgreSQL, use:
 
-## Secrets
+```bash
+bash scripts/api_demo.sh
+```
 
-Never commit `.env`, passwords or database credentials: Git history and public
-clones retain them even after file deletion. Use local environment variables
-and Jenkins Credentials for any private-repository credentials. The public
-GitHub checkout does not need a credential.
+This script tests CRUD responses and checks that an updated record survives
+`docker compose down` followed by `up -d`. It creates and deletes test data for
+student number `37693`; other student records are preserved.
 
-## HTTP endpoints
+## Linux and Jenkins
 
-| Method | Endpoint | Success | Error examples |
-| --- | --- | --- | --- |
-| POST | /api/students | 201 and Location header | 400 invalid body, 409 duplicate studentNumber |
-| GET | /api/students | 200 array | |
-| GET | /api/students/{id} | 200 student | 404 missing |
-| PUT | /api/students/{id} | 200 updated student | 400 invalid body, 404 missing, 409 duplicate |
-| DELETE | /api/students/{id} | 204 | 404 missing |
+`bash scripts/linux_evidence.sh` creates the system report, searches the log for
+Sembi and backs up this README. The report script uses permission mode `744`.
 
-Fields: fullName, groupName, studentNumber (digits), email.
+The Jenkins job is `Sembi_Amir_Student_API`. It checks out the repository, builds
+the application, runs tests, builds `sembi-amir-student-api:v1.0-37693` and checks
+that the image exists. A failed build or test stops the remaining stages.
 
-## Midterm demonstration
+## Configuration and credentials
 
-- [Commands and submission checklist in Russian](docs/DEMONSTRATION_RU.md)
-- [Defense questions and answers in Russian](docs/DEFENSE_RU.md)
+Keep `.env` and `infra/secrets/` out of Git. The example environment file contains
+only a placeholder. A public GitHub checkout needs no credential; for a private
+repository, select a credential stored in Jenkins Credentials.
+
+## Demonstration and defense
+
+- [Commands for each part of the midterm](docs/DEMONSTRATION_RU.md)
+- [Verification checklist](docs/VERIFICATION_RU.md)
+- [Defense questions and answers](docs/DEFENSE_RU.md)
 - [Official references](docs/REFERENCES.md)
-
-Run `bash scripts/linux_evidence.sh` for the personalized Linux report and backup.
-Run `bash scripts/api_demo.sh` for real PostgreSQL CRUD and persistence checks.
-The API demo removes only its previous studentNumber 37693 demo record, creates
-new test data, recreates this project's containers, verifies persistence and
-deletes the record. Other student records remain in the database.
-
-## CRUD feature by Sembi Amir
-
-PUT `/api/students/{id}` updates all validated student fields, returns 200 for an
-existing ID, 400 for invalid fields, 404 for a missing ID and 409 for a duplicate
-student number. An automated lifecycle test verifies the stored update.
